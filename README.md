@@ -1,6 +1,6 @@
 # Guobaplay
 
-A Discord music bot written in Rust using Serenity and Songbird.
+A Discord music bot written in Rust using Serenity and Songbird. A lot of this is built off of the examples in the Songbird repository so FULL credit to them on that.
 
 Dockerfile currently doesn't work, but you can compile and use the binary in a service file!
 
