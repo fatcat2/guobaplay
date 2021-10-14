@@ -1,0 +1,9 @@
+[Unit]
+Description=guobaplay1
+
+[Service]
+ExecStart=/usr/bin/guobaplay-rs
+Environment=DISCORD_TOKEN=<DISCORD_TOKEN_HERE>
+
+[Install]
+WantedBy=multi-user.target
