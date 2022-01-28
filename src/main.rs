@@ -57,7 +57,7 @@ impl EventHandler for Handler {
 
 #[group]
 #[commands(
-    deafen, join, leave, mute, play_fade, queue, skip, stop, ping, undeafen, unmute
+    deafen, join, leave, mute, play_fade, queue, skip, stop, ping, undeafen, unmute, repeat, norepeat
     )]
 struct General;
 
@@ -126,6 +126,7 @@ async fn deafen(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 #[only_in(guilds)]
 async fn join(ctx: &Context, msg: &Message) -> CommandResult {
+    print!("yeeet");
     let guild = msg.guild(&ctx.cache).await.unwrap();
     let guild_id = guild.id;
 
@@ -202,6 +203,53 @@ impl VoiceEventHandler for TrackEndNotifier {
 
         None
     }
+}
+
+#[command]
+#[only_in(guilds)]
+async fn repeat(ctx: &Context, msg: &Message) -> CommandResult {
+    let guild = msg.guild(&ctx.cache).await.unwrap();
+    let guild_id = guild.id;
+
+    let manager = songbird::get(ctx)
+        .await
+        .expect("Songbird Voice client placed in at initialisation.")
+        .clone();
+
+    if let Some(handler_lock) = manager.get(guild_id) {
+        let mut handler = handler_lock.lock().await;
+
+        let currentTrack = handler.queue().current().unwrap();
+
+        currentTrack.enable_loop();
+    }
+
+    Ok(())
+    
+}
+
+
+#[command]
+#[only_in(guilds)]
+async fn norepeat(ctx: &Context, msg: &Message) -> CommandResult {
+    let guild = msg.guild(&ctx.cache).await.unwrap();
+    let guild_id = guild.id;
+
+    let manager = songbird::get(ctx)
+        .await
+        .expect("Songbird Voice client placed in at initialisation.")
+        .clone();
+
+    if let Some(handler_lock) = manager.get(guild_id) {
+        let mut handler = handler_lock.lock().await;
+
+        let currentTrack = handler.queue().current().unwrap();
+
+        currentTrack.disable_loop();
+    }
+
+    Ok(())
+    
 }
 
 
