@@ -15,7 +15,7 @@ use std::{
         atomic::{AtomicUsize, Ordering},
         Arc,
     },
-    time::Duration,
+    time::Duration, alloc::handle_alloc_error,
 };
 
 use serenity::{
@@ -499,7 +499,7 @@ async fn queue(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
         // Here, we use lazy restartable sources to make sure that we don't pay
         // for decoding, playback on tracks which aren't actually live yet.
         if url.starts_with("http") {
-            let source = match Restartable::ytdl(url, true).await {
+            let source = match Restartable::ytdl(url.clone(), true).await {
                 Ok(source) => source,
                 Err(why) => {
                     println!("Err starting source: {:?}", why);
@@ -512,7 +512,7 @@ async fn queue(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
 
             handler.enqueue_source(source.into());
         }else{
-            let source = match Restartable::ytdl_search(url, true).await {
+            let source = match Restartable::ytdl_search(url.clone(), true).await {
                 Ok(source) => source,
                 Err(why) => {
                     println!("Err starting source: {:?}", why);
@@ -523,15 +523,23 @@ async fn queue(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                 },
             };
 
-            handler.enqueue_source(source.into());
+            
 
         }
+
+        let track_queue = handler.queue().current_queue();
+        let queue_position = handler.queue().len();
+        let track_url = match &track_queue[queue_position].metadata().source_url{
+            Some(url) => url.as_str(),
+            _ => "yeet"
+        };
+
 
         check_msg(
             msg.channel_id
             .say(
                 &ctx.http,
-                format!("Added song to queue: position {}", handler.queue().len()),
+                format!("Added song to queue: position {} {}", handler.queue().len(), track_url),
                 )
             .await,
             );
