@@ -524,12 +524,14 @@ async fn queue(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             };
 
             
+            handler.enqueue_source(source.into());
 
         }
 
         let track_queue = handler.queue().current_queue();
         let queue_position = handler.queue().len();
-        let track_url = match &track_queue[queue_position].metadata().source_url{
+        println!("{}", queue_position);
+        let track_url = match &track_queue[queue_position-1].metadata().source_url{
             Some(url) => url.as_str(),
             _ => "yeet"
         };
@@ -539,7 +541,7 @@ async fn queue(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             msg.channel_id
             .say(
                 &ctx.http,
-                format!("Added song to queue: position {} {}", handler.queue().len(), track_url),
+                format!("Added song to queue: position {}.\n{}", handler.queue().len(), track_url),
                 )
             .await,
             );
