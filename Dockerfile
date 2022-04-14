@@ -11,27 +11,35 @@
 #FROM ${BASE_IMAGE} AS builder
 
 # Add our source code.
-FROM ubuntu:18.04
+FROM alpine:latest
  
-RUN apt-get update && apt-get install -y curl
-RUN apt-get install build-essential -y
+RUN apk update && apk add curl
+RUN apk add g++ make
+RUN apk add bash
  
-RUN mkdir -p /user/turreta-rust-builder/src
-WORKDIR /user/turreta-rust-builder/src
- 
+RUN mkdir -p /user/gb/guobaplay/
+WORKDIR /user/gb/guobaplay/
+
+RUN apk add --no-cache bash
+COPY . ./
+
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-#ADD --chown=rust:rust . ./
-RUN apt-get update -y
-RUN apt-get install build-essential autoconf automake libtool m4 -y
-RUN apt-get install libopus-dev -y 
-RUN apt-get install ffmpeg -y 
+RUN apk update 
+RUN apk add g++ make autoconf automake libtool m4
+RUN apk add opus-dev
+RUN apk add ffmpeg 
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 RUN chmod a+rx /usr/local/bin/youtube-dl
 
 # Build our application.
-#RUN cargo build --release
+RUN cargo install --path .
+#RUN chmod +x guobaplay-rs
+CMD ["guobaplay-rs"]
 
 # Now, we need to build our _real_ Docker container, copying in `using-diesel`.
 #FROM alpine:latest
