@@ -10,12 +10,9 @@
 //! features = ["cache", "framework", "standard_framework", "voice"]
 //! ```
 use std::{
+    sync::Arc,
+    time::Duration,
     env,
-    sync::{
-        atomic::{AtomicUsize, Ordering},
-        Arc,
-    },
-    time::Duration, alloc::handle_alloc_error,
 };
 
 use serenity::{
@@ -46,6 +43,9 @@ use songbird::{
     TrackEvent,
 };
 
+pub mod tracklist;
+use tracklist::tracklist::get_queue;
+
 struct Handler;
 
 #[async_trait]
@@ -57,7 +57,7 @@ impl EventHandler for Handler {
 
 #[group]
 #[commands(
-    deafen, join, leave, mute, play_fade, queue, skip, stop, ping, undeafen, unmute, repeat, norepeat
+    deafen, join, leave, mute, play_fade, queue, skip, stop, ping, undeafen, unmute, repeat, norepeat, list
     )]
 struct General;
 
@@ -219,9 +219,9 @@ async fn repeat(ctx: &Context, msg: &Message) -> CommandResult {
     if let Some(handler_lock) = manager.get(guild_id) {
         let mut handler = handler_lock.lock().await;
 
-        let currentTrack = handler.queue().current().unwrap();
+        let current_track = handler.queue().current().unwrap();
 
-        currentTrack.enable_loop();
+        current_track.enable_loop();
     }
 
     Ok(())
@@ -243,9 +243,9 @@ async fn norepeat(ctx: &Context, msg: &Message) -> CommandResult {
     if let Some(handler_lock) = manager.get(guild_id) {
         let mut handler = handler_lock.lock().await;
 
-        let currentTrack = handler.queue().current().unwrap();
+        let current_track = handler.queue().current().unwrap();
 
-        currentTrack.disable_loop();
+        current_track.disable_loop();
     }
 
     Ok(())
@@ -587,6 +587,19 @@ async fn skip(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
             .await,
             );
     }
+
+    Ok(())
+}
+
+#[command]
+#[only_in(guilds)]
+async fn list(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
+    let message: String = match get_queue(ctx, msg).await {
+        Ok(msg) => msg.clone(),
+        _ => String::from("yeet")
+    };
+
+    check_msg(msg.channel_id.say(&ctx.http, message.as_str()).await);
 
     Ok(())
 }
