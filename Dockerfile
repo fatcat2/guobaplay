@@ -15,6 +15,8 @@ RUN chmod a+rx /usr/local/bin/youtube-dl
 
 ENV PATH=$PATH:/usr/local/bin/python
 
+# the line we needed, not the line we deserved
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # rust
 run apt install -yq rustc
@@ -26,4 +28,4 @@ COPY . /workspace
 
 # compiled crusty rust
 RUN cargo build --release
-CMD ["/workspace/target/release/guobaplay-rs"]
+ENTRYPOINT ["/workspace/target/release/guobaplay-rs"]
