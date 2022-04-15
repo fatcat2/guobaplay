@@ -46,6 +46,9 @@ use songbird::{
 pub mod tracklist;
 use tracklist::tracklist::get_queue;
 
+pub mod commands;
+use commands::commands::{help_command};
+
 struct Handler;
 
 #[async_trait]
@@ -57,7 +60,7 @@ impl EventHandler for Handler {
 
 #[group]
 #[commands(
-    deafen, join, leave, mute, play_fade, queue, skip, stop, ping, undeafen, unmute, repeat, norepeat, list
+    deafen, join, leave, mute, play_fade, queue, skip, stop, ping, undeafen, unmute, repeat, norepeat, list, help
     )]
 struct General;
 
@@ -172,7 +175,7 @@ async fn join(ctx: &Context, msg: &Message) -> CommandResult {
             },
             );
 
-        let send_http = ctx.http.clone();
+        let _send_http = ctx.http.clone();
 
     } else {
         check_msg(
@@ -226,6 +229,20 @@ async fn repeat(ctx: &Context, msg: &Message) -> CommandResult {
 
     Ok(())
     
+}
+
+#[command]
+#[only_in(guilds)]
+async fn help(ctx: &Context, msg: &Message) -> CommandResult {
+    let help_message = help_command();
+
+    check_msg(
+        msg.channel_id
+        .say(&ctx.http, help_message)
+        .await,
+        );
+
+    Ok(())
 }
 
 
