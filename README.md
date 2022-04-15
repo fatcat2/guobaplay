@@ -9,3 +9,15 @@ There's honestly not really a reason to use this in a Dockerfile since it's just
 | vars | value | 
 |-----|--------|
 |DISCORD_TOKEN| your discord token|
+
+## Running in Docker
+
+```bash 
+# docker
+docker build . -t goubaplay
+docker run -it guobaplay bash
+
+# docker compose
+docker-compose build 
+docker-compose run guobaplay 
+```

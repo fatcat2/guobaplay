@@ -1,0 +1,12 @@
+version: '3'
+services:
+  guobaplay:
+    build:
+      context: .
+    env_file:
+      - .env
+    command: '/workspace/target/release/guobaplay-rs'
+    volumes:
+      - .:/workspace
+volumes:
+  workspace:
