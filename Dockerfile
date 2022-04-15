@@ -25,4 +25,5 @@ WORKDIR /workspace
 COPY . /workspace
 
 # compiled crusty rust
-RUN cargo install --path .
+RUN cargo build --release
+CMD ["/workspace/target/release/guobaplay-rs"]
