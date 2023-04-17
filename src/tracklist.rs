@@ -4,7 +4,7 @@ pub mod tracklist {
     use serenity::model::channel::Message;
     pub async fn get_queue(ctx: &Context, msg: &Message) -> Result<String, String> {
 
-        let guild = msg.guild(&ctx.cache).await.unwrap();
+        let guild = msg.guild(&ctx.cache).unwrap();
         let guild_id = guild.id;
 
         let manager = songbird::get(ctx)
