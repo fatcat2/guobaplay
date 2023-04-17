@@ -1,12 +1,8 @@
 version: '3'
 services:
   guobaplay:
-    build:
-      context: .
-    env_file:
-      - .env
-    command: '/workspace/target/release/guobaplay-rs'
-    volumes:
-      - .:/workspace
+    image: ghcr.io/fatcat2/guobaplay
+    environment:
+      - DISCORD_TOKEN=<INSERT TOKEN HERE>
 volumes:
   workspace:

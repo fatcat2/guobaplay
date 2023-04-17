@@ -75,9 +75,9 @@ async fn main() {
     let framework = StandardFramework::new()
         .configure(|c| c.prefix("~"))
         .group(&GENERAL_GROUP);
-    std::env::set_var("RUST_LOG", "trace");
 
-    let intents = GatewayIntents::MESSAGE_CONTENT | GatewayIntents::GUILDS | GatewayIntents::GUILD_MESSAGES | GatewayIntents::non_privileged();
+
+    let intents = GatewayIntents::MESSAGE_CONTENT | GatewayIntents::GUILDS | GatewayIntents::GUILD_MESSAGES;
 
     let mut client = Client::builder(&token, intents)
         .event_handler(Handler)
@@ -150,8 +150,6 @@ async fn join(ctx: &Context, msg: &Message) -> CommandResult {
             return Ok(());
         },
     };
-
-    println!("{:?}", connect_to);
 
     let manager = songbird::get(ctx)
         .await
@@ -235,7 +233,7 @@ async fn repeat(ctx: &Context, msg: &Message) -> CommandResult {
     }
 
     Ok(())
-
+    
 }
 
 
@@ -259,7 +257,7 @@ async fn norepeat(ctx: &Context, msg: &Message) -> CommandResult {
     }
 
     Ok(())
-
+    
 }
 
 
@@ -485,15 +483,15 @@ async fn queue(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
         },
     };
     /*
-       if !url.starts_with("http") {
-       check_msg(
-       msg.channel_id
-       .say(&ctx.http, "Must provide a valid URL")
-       .await,
-       );
+    if !url.starts_with("http") {
+        check_msg(
+            msg.channel_id
+            .say(&ctx.http, "Must provide a valid URL")
+            .await,
+            );
 
-       return Ok(());
-       }*/
+        return Ok(());
+    }*/
 
     let guild = msg.guild(&ctx.cache).unwrap();
     let guild_id = guild.id;
@@ -533,7 +531,7 @@ async fn queue(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                 },
             };
 
-
+            
             handler.enqueue_source(source.into());
 
         }

@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM --platform=linux/amd64 ubuntu:latest
 
 # important lib things
 ENV DEBIAN_FRONTEND=noninteractive
